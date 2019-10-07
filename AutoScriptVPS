@@ -46,20 +46,7 @@ echo 'echo -e "\e[0m"'                                                    >> .ba
 echo 'echo -e "\e[94m             [accounts/options/server]            "' >> .bashrc
 echo 'echo -e "\e[0m                                                   "' >> .bashrc
 
-# Install WebServer
-apt-get -y install nginx
 
-# WebServer Configuration
-cd
-rm /etc/nginx/sites-enabled/default
-rm /etc/nginx/sites-available/default
-wget -O /etc/nginx/nginx.conf "https://raw.githubusercontent.com/Dreyannz/AutoScriptVPS/master/Files/Nginx/nginx.conf"
-mkdir -p /home/vps/public_html
-echo "<h1><center>AutoScriptVPS by _Dreyannz_</center></h1>" > /home/vps/public_html/index.html
-echo "<h3><center>For More Info Visit My <a href="https://github.com/Dreyannz">Github Repositories</a></center><h3>" >> /home/vps/public_html/index.html
-echo "<h3><center>You Can Also Contact Me at <a href="https://www.facebook.com/Dreyannz">Facebook</a> and <a href="https://twitter.com/Dreyannz">Twitter</a></center></h3>" >> /home/vps/public_html/index.html
-wget -O /etc/nginx/conf.d/vps.conf "https://raw.githubusercontent.com/Dreyannz/AutoScriptVPS/master/Files/Nginx/vps.conf"
-service nginx restart
 
 # Install OpenVPN
 apt-get -y install openvpn easy-rsa openssl iptables
@@ -151,16 +138,16 @@ screen -AmdS badvpn badvpn-udpgw --listen-addr 127.0.0.1:7300
 
 # SSH Configuration
 cd
-sed -i '/Port 22/a Port 143' /etc/ssh/sshd_config
-sed -i '/Port 22/a Port  81' /etc/ssh/sshd_config
+sed -i '/Port 22/a Port 144' /etc/ssh/sshd_config
+sed -i '/Port 22/a Port  145' /etc/ssh/sshd_config
 sed -i 's/Port 22/Port  22/g' /etc/ssh/sshd_config
 service ssh restart
 
 # Install Dropbear
 apt-get -y install dropbear
 sed -i 's/NO_START=1/NO_START=0/g' /etc/default/dropbear
-sed -i 's/DROPBEAR_PORT=22/DROPBEAR_PORT=443/g' /etc/default/dropbear
-sed -i 's/DROPBEAR_EXTRA_ARGS=/DROPBEAR_EXTRA_ARGS="-p 82 -p 142"/g' /etc/default/dropbear
+sed -i 's/DROPBEAR_PORT=22/DROPBEAR_PORT=442/g' /etc/default/dropbear
+sed -i 's/DROPBEAR_EXTRA_ARGS=/DROPBEAR_EXTRA_ARGS="-p 109 -p 143"/g' /etc/default/dropbear
 echo "/bin/false" >> /etc/shells
 echo "/usr/sbin/nologin" >> /etc/shells
 service ssh restart
@@ -169,9 +156,9 @@ service dropbear restart
 # Install Squid3
 cd
 apt-get -y install squid3
-wget -O /etc/squid3/squid.conf "https://raw.githubusercontent.com/Dreyannz/AutoScriptVPS/master/Files/Squid/squid3.conf"
-sed -i $MYIP2 /etc/squid3/squid.conf;
-service squid3 restart
+wget -O /etc/squid/squid.conf "https://raw.githubusercontent.com/Dreyannz/AutoScriptVPS/master/Files/Squid/squid3.conf"
+sed -i $MYIP2 /etc/squid/squid.conf;
+service squid restart
 
 # Install WebMin
 cd
@@ -303,13 +290,11 @@ chmod +x speedtest
 # Finishing
 cd
 chown -R www-data:www-data /home/vps/public_html
-service nginx start
 service openvpn restart
 service cron restart
 service ssh restart
 service dropbear restart
-service squid3 restart
-service webmin restart
+service squid restart
 rm -rf ~/.bash_history && history -c
 rm -f /root/AutoScriptVPS.sh
 echo "unset HISTFILE" >> /etc/profile
@@ -319,7 +304,7 @@ opensshport="$(netstat -ntlp | grep -i ssh | grep -i 0.0.0.0 | awk '{print $4}' 
 dropbearport="$(netstat -nlpt | grep -i dropbear | grep -i 0.0.0.0 | awk '{print $4}' | cut -d: -f2)"
 stunnel4port="$(netstat -nlpt | grep -i stunnel | grep -i 0.0.0.0 | awk '{print $4}' | cut -d: -f2)"
 openvpnport="$(netstat -nlpt | grep -i openvpn | grep -i 0.0.0.0 | awk '{print $4}' | cut -d: -f2)"
-squidport="$(cat /etc/squid3/squid.conf | grep -i http_port | awk '{print $2}')"
+squidport="$(cat /etc/squid/squid.conf | grep -i http_port | awk '{print $2}')"
 nginxport="$(netstat -nlpt | grep -i nginx| grep -i 0.0.0.0 | awk '{print $4}' | cut -d: -f2)"
 
 # Info
